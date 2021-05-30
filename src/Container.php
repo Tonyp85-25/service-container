@@ -60,7 +60,7 @@ class Container
         ];
     }
 
-    public function loadServices(string $namespace):void
+    public function loadServices(string $namespace, ?\Closure $callback = null):void
     {
         $baseDir = __DIR__. '/';
         $actualDirectory =str_replace('\\','/',$namespace);
@@ -73,7 +73,7 @@ class Container
         {
             $class = new ReflectionClass($namespace.'\\'.basename($file,'.php'));
             $serviceName =$class->getName();
-            var_dump($serviceName);
+            var_dump($serviceName."\n");
 
             $constructor = $class->getConstructor();
             $arguments =$constructor->getParameters();
@@ -101,7 +101,12 @@ class Container
                     }
                 }
                 return new $serviceName(...$serviceParameters);
-            });
+            },strtolower($serviceName) );
+        }
+
+        if ($callback)
+        {
+            $callback($serviceName,$class);
         }
       
 
